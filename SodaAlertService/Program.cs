@@ -12,9 +12,12 @@ var builder = WebApplication.CreateBuilder(args);
     This program runs its own API, 
     and prints a parsed JSON message, 
     containing data from cityofchicago's SODA endpoint, 
-    via a hard-coded URL & card-coded SoQL query. 
+    via a hard-coded URL & user-input SoQL query. 
 
 */
+
+//Variables:
+bool debug = false;
 
 // Add services to the container.
     // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
@@ -40,7 +43,13 @@ app.UseHttpsRedirection();  //Automatically intercepts insecure HTTP web request
 app.MapGet("/permits", async (SodaClient sodaClient) =>
 {   
     string baseURL = "https://data.cityofchicago.org/resource/ydr8-5enu.json";
-    string query = "$limit=5";
+    string query = "";
+
+    if (debug)
+        query = "$limit=5";
+    else
+        Console.Write("ENTER YOUR QUERY: ");
+        query = Console.ReadLine() ?? "";       // ?? assigns a default value if nothing is entered.
 
     return await sodaClient.GetLatestPermitsAsync(baseURL, query);
 });
