@@ -8,7 +8,7 @@ using System.Runtime.CompilerServices;
 using SodaAlertService.Services;                    //This imports SodaClient.cs from my Services dir.
 var builder = WebApplication.CreateBuilder(args);
 
-/*What this does (as of 7/30/26 @ 3:04pm):
+/*What this does (as of 7/30/26 @ 3:20pm):
     This program runs its own API, 
     and prints a parsed JSON message, 
     containing data from cityofchicago's SODA endpoint, 
@@ -39,10 +39,8 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();  //Automatically intercepts insecure HTTP web requests and redirects them to their secure HTTPS counterparts.
 
-
-app.MapGet("/permits", async (SodaClient sodaClient) =>
-{   
-    string baseURL = "https://data.cityofchicago.org/resource/ydr8-5enu.json";
+//User input:
+string baseURL = "https://data.cityofchicago.org/resource/ydr8-5enu.json";
     string query = "";
 
     if (debug)
@@ -50,6 +48,11 @@ app.MapGet("/permits", async (SodaClient sodaClient) =>
     else
         Console.Write("ENTER YOUR QUERY: ");
         query = Console.ReadLine() ?? "";       // ?? assigns a default value if nothing is entered.
+
+
+//What happens when the webpage is accessed:
+app.MapGet("/permits", async (SodaClient sodaClient) =>
+{   
 
     return await sodaClient.GetLatestPermitsAsync(baseURL, query);
 });
