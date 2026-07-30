@@ -1,0 +1,6 @@
+@SodaAlertService_HostAddress = http://localhost:5125
+
+GET {{SodaAlertService_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
