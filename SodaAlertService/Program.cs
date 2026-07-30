@@ -7,9 +7,9 @@
 using SodaAlertService.Services;                    //This imports SodaClient.cs from my Services dir.
 var builder = WebApplication.CreateBuilder(args);
 
-/*What it do (as of 7/30/26 @ 1:46pm):
+/*What it do (as of 7/30/26 @ 2:49pm):
     This program runs its own API, 
-    and prints a hello message from SodaClient.cs in the /permits directory of localhost. 
+    and prints a parsed JSON message, containing data from cityofchicago's SODA endpoint, via a hard-coded SoQL query. 
 
 */
 
