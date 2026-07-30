@@ -19,6 +19,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 //Tell ASP.NET: "Whenever someone asks for a SodaClient, create one for them."
     builder.Services.AddHttpClient();               //This tells ASP.NET:   "I want to use HttpClient."
+                                                    //This means "If any class needs an HttpClient, create one and provide it automatically."
 
     builder.Services.AddScoped<SodaClient>();       //Stand-in for SodaClient client = new SodaClient();
 
