@@ -4,12 +4,15 @@
 //Made for:         RankedIn Sprint #3
 //Target company:   Tyler Technologies
 
+using System.Runtime.CompilerServices;
 using SodaAlertService.Services;                    //This imports SodaClient.cs from my Services dir.
 var builder = WebApplication.CreateBuilder(args);
 
-/*What it do (as of 7/30/26 @ 2:49pm):
+/*What this does (as of 7/30/26 @ 3:04pm):
     This program runs its own API, 
-    and prints a parsed JSON message, containing data from cityofchicago's SODA endpoint, via a hard-coded SoQL query. 
+    and prints a parsed JSON message, 
+    containing data from cityofchicago's SODA endpoint, 
+    via a hard-coded URL & card-coded SoQL query. 
 
 */
 
@@ -35,8 +38,11 @@ app.UseHttpsRedirection();  //Automatically intercepts insecure HTTP web request
 
 
 app.MapGet("/permits", async (SodaClient sodaClient) =>
-{
-    return await sodaClient.GetLatestPermitsAsync();
+{   
+    string baseURL = "https://data.cityofchicago.org/resource/ydr8-5enu.json";
+    string query = "$limit=5";
+
+    return await sodaClient.GetLatestPermitsAsync(baseURL, query);
 });
 
 //This makes the program actually run.

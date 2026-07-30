@@ -1,5 +1,7 @@
 //All communication with SODA lives in one class (this class).
 namespace SodaAlertService.Services;
+
+using System.Buffers.Text;
 using System.Text.Json;
 using SodaAlertService.Models;
 
@@ -14,6 +16,18 @@ public class SodaClient
         _httpClient = httpClient;
     }
 
+    //Access items from an API based on the user's query:
+    //Returns a list of BuildingPermit objects.
+    public async Task<List<BuildingPermit>?> GetLatestPermitsAsync(string baseURL, string query)
+    {
+        string url = $"{baseURL}?{query}";
+
+        string json = await _httpClient.GetStringAsync(url);            //Get and store json content as a string,
+
+        return JsonSerializer.Deserialize<List<BuildingPermit>>(json);  //Then return that string as a list of BuildingPermits.
+    }
+
+    /*
     //Access 5 items from the City of Chicago's endpoint:
     //Returns a list of BuildingPermit objects.
     public async Task<List<BuildingPermit>?> GetLatestPermitsAsync()
@@ -25,6 +39,7 @@ public class SodaClient
 
         return JsonSerializer.Deserialize<List<BuildingPermit>>(json);  //Then return that string as a list of BuildingPermits.
     }
+    */
 
     /*
     //Access 5 items from the City of Chicago's endpoint:
