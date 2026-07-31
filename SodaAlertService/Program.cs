@@ -12,13 +12,15 @@ var builder = WebApplication.CreateBuilder(args);
 
 /*What this does (as of 7/31/26 @ 2:00pm):
     This program runs its own API, 
-    and prints a parsed JSON building permits from cityofchicago's SODA endpoint, 
-    via URL + query combinations from JSON files. 
+    prints a parsed JSON building permits from cityofchicago's SODA endpoint to localhost, 
+    via URL + query combinations from JSON files,
+    automatically queries again every 2 seconds,
+    and prints the status to the console. 
 */
 
 //Variables:
-    bool debug = false;
-    string baseURL = "https://data.cityofchicago.org/resource/ydr8-5enu.json";
+    //bool debug = false;
+    //string baseURL = "https://data.cityofchicago.org/resource/ydr8-5enu.json";
     List<Monitor> monitors = new();
 
     //Populate the list of monitors:
@@ -33,7 +35,7 @@ var builder = WebApplication.CreateBuilder(args);
     }
 
 
-// Add services to the container.
+// Add services to the program's order of operations:.
     // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
     builder.Services.AddOpenApi();
 
@@ -41,8 +43,11 @@ var builder = WebApplication.CreateBuilder(args);
     builder.Services.AddHttpClient();               //This tells ASP.NET:   "I want to use HttpClient."
                                                     //This means "If any class needs an HttpClient, create one and provide it automatically."
 
-    builder.Services.AddScoped<SodaClient>();       //Stand-in for SodaClient client = new SodaClient();
+    builder.Services.AddTransient<SodaClient>();       //Stand-in for SodaClient client = new SodaClient();
 
+    builder.Services.AddHostedService<QueryMonitorService>();   //After web server is started, 
+
+//Build the app:
     var app = builder.Build();
 
     // Configure the HTTP request pipeline.
@@ -54,20 +59,25 @@ var builder = WebApplication.CreateBuilder(args);
     app.UseHttpsRedirection();  //Automatically intercepts insecure HTTP web requests and redirects them to their secure HTTPS counterparts.
 
 //What happens when the webpage is accessed:
-int i = 0;
-foreach (Monitor monitor in monitors)
-{   
-    //Needs to return data:
-    app.MapGet("/monitor" + i, async (SodaClient sodaClient) =>
+    int i = 0;
+    foreach (Monitor monitor in monitors)
     {   
-        var permits = sodaClient.GetLatestPermitsAsync(monitor.BaseUrl, monitor.Query);
-        return await permits;
-    });
+        //Making legal copies, just to be safe:
+        var currentMonitor = monitor;
+        int currentIndex = i;
 
-    i++;
-}
+        //Needs to return data:
+        app.MapGet($"/monitor{currentIndex}", async (SodaClient sodaClient) =>
+        {   
+            var permits = sodaClient.GetLatestPermitsAsync(currentMonitor.BaseUrl, currentMonitor.Query);
+            return await permits;
+        });
+
+        i++;
+    }
 
 
 
 //This makes the program actually run.
+//FYI, ap.Run() never returns. It starts the web server and blocks the main thread until the application shuts down.
 app.Run();
