@@ -14,8 +14,8 @@ var builder = WebApplication.CreateBuilder(args);
     This program runs its own API, 
     prints a parsed JSON building permits from cityofchicago's SODA endpoint to localhost, 
     via URL + query combinations from JSON files,
-    automatically queries again every 2 seconds,
-    and prints the status to the console. 
+    automatically queries again every 3 seconds,
+    and lets the user know whether the data has changed or not. 
 */
 
 //Variables:

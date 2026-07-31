@@ -27,6 +27,13 @@ public class SodaClient
         return JsonSerializer.Deserialize<List<BuildingPermit>>(json);  //Then return that string as a list of BuildingPermits.
     }
 
+    //The same as the previous method, but just returns the raw JSON:
+    public async Task<string> GetRawJsonAsync(string baseUrl, string query)
+    {
+        string url = $"{baseUrl}?{query}";
+        return await _httpClient.GetStringAsync(url);
+    }
+
     /*
     //Access 5 items from the City of Chicago's endpoint:
     //Returns a list of BuildingPermit objects.
