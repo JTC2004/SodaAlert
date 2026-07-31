@@ -1,0 +1,6 @@
+{
+  "baseUrl": "https://data.cityofchicago.org/resource/ydr8-5enu.json",
+  "query": "$where=reported_cost > 1000000",
+  "pollingIntervalMinutes": 1,
+  "email": "jaredcrow@gmail.com"
+}
