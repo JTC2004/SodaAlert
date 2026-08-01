@@ -51,6 +51,7 @@ public class QueryMonitorService : BackgroundService
                 if (!previousJSON.ContainsKey(URL))
                 {
                     previousJSON[URL] = rawJSON;
+                    Console.WriteLine($"Now observing with monitor {i}.");
                 }
                 //If this URL's raw JSON is different from what is recorded in the dictionary, notify the user and update the dictionary.
                 else if (previousJSON[URL] != rawJSON)

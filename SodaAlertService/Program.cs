@@ -10,7 +10,7 @@ using SodaAlertService.Services;                    //This imports SodaClient.cs
 using Monitor = SodaAlertService.Models.Monitor;    //This imports Monitor from Monitor.cs
 var builder = WebApplication.CreateBuilder(args);
 
-/*What this does (as of 7/31/26 @ 2:00pm):
+/*What this does (as of 8/1/26 @ 1:55pm):
     This program runs its own API, 
     prints a parsed JSON building permits from cityofchicago's SODA endpoint to localhost, 
     via URL + query combinations from JSON files,

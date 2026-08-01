@@ -1,6 +1,6 @@
 {
   "baseUrl": "https://data.cityofchicago.org/resource/ydr8-5enu.json",
-  "query": "$select=permit_,work_description,issue_date&$order=issue_date DESC&$limit=100",
+  "query": "$where=issue_date >= '2026-08-01T00:00:00'&$order=issue_date DESC",
   "pollingIntervalMinutes": 1,
   "email": "jaredcrow@gmail.com"
 }
