@@ -1,12 +1,13 @@
 namespace SodaAlertService.Services;
 using System.Text.Json;
 using Monitor = SodaAlertService.Models.Monitor;    //This imports Monitor from Monitor.cs
+using SodaAlertService.Models;
 
 //This is run every frame to check the monitors:
 public class QueryMonitorService : BackgroundService
 {
     private readonly SodaClient _sodaClient;
-    private Dictionary<string, string> previousJson = new();    //This is a dictionary that tracks the previous json calls.
+    private Dictionary<string, string> previousJSON = new();    //This is a dictionary that tracks the previous json calls.
 
     public QueryMonitorService(SodaClient sodaClient)
     {
@@ -17,7 +18,7 @@ public class QueryMonitorService : BackgroundService
     {
         while (!stoppingToken.IsCancellationRequested)
         {
-            Console.WriteLine("Checking monitors...");
+            Console.WriteLine("\n\nChecking monitors...");
 
             List<Monitor> monitors = new();
 
@@ -47,19 +48,54 @@ public class QueryMonitorService : BackgroundService
                 var rawJSON = await _sodaClient.GetRawJsonAsync(monitor.BaseUrl, monitor.Query);
 
                 //If this monitor's raw JSON isn't already in the dictionary, add it, with the URL as the key.
-                if (!previousJson.ContainsKey(URL))
+                if (!previousJSON.ContainsKey(URL))
                 {
-                    previousJson[URL] = rawJSON;
+                    previousJSON[URL] = rawJSON;
                 }
                 //If this URL's raw JSON is different from what is recorded in the dictionary, notify the user and update the dictionary.
-                else if (previousJson[URL] != rawJSON)
+                else if (previousJSON[URL] != rawJSON)
                 {
                     Console.WriteLine($"MONITOR {i} CHANGED!!");
 
-                    var parsedJSON = await _sodaClient.GetLatestPermitsAsync(monitor.BaseUrl, monitor.Query);
-                    Console.WriteLine($"Monitor '{monitor.Query}' returned {parsedJSON?.Count ?? 0} records.");
+                    //var parsedJSON = await _sodaClient.GetLatestPermitsAsync(monitor.BaseUrl, monitor.Query);
+                    //Console.WriteLine($"Monitor '{monitor.Query}' returned {parsedJSON?.Count ?? 0} records.");
 
-                    previousJson[URL] = rawJSON;
+                    //Compare the two and report what changed:
+                    List<BuildingPermit>? current = JsonSerializer.Deserialize<List<BuildingPermit>>(rawJSON);
+                    List<BuildingPermit>? previous = JsonSerializer.Deserialize<List<BuildingPermit>>(previousJSON[URL]);
+
+                    //Since every permit has a unique permit number, build dictionaries:
+                    //Note: ! is a null-forgiving operator here. It means: "I know this value won't be null here."
+
+                    var currentDict = current.Where(p => p.PermitNumber != null).ToDictionary(p => p.PermitNumber!);     
+                    var previousDict = previous.Where(p => p.PermitNumber != null).ToDictionary(p => p.PermitNumber!);      //Filter out if null.
+                    
+                    //Search the permits in the monitor, check each property, and see what changed:
+                    foreach (var permit in current)
+                    {
+                        if (permit.PermitNumber == null)
+                            continue;
+
+                        if (!previousDict.TryGetValue(permit.PermitNumber, out var oldPermit))
+                        {
+                            Console.WriteLine($"New permit: {permit.PermitNumber}");
+                            continue;
+                        }
+
+                        foreach (var property in typeof(BuildingPermit).GetProperties())
+                        {
+                            object? oldValue = property.GetValue(oldPermit);
+                            object? newValue = property.GetValue(permit);
+
+                            if (!Equals(oldValue, newValue))
+                            {
+                                Console.WriteLine(
+                                    $"\tPermit # {permit.PermitNumber}: {property.Name} changed from '{oldValue}' to '{newValue}'");
+                            }
+                        }
+                    }
+
+                    previousJSON[URL] = rawJSON;
                 }
                 //Else, nothing changed.
                 else

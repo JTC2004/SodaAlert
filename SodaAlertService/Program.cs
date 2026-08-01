@@ -15,8 +15,16 @@ var builder = WebApplication.CreateBuilder(args);
     prints a parsed JSON building permits from cityofchicago's SODA endpoint to localhost, 
     via URL + query combinations from JSON files,
     automatically queries again every 3 seconds,
-    and lets the user know whether the data has changed or not. 
+    lets the user know whether the data has changed or not,
+    and prints what changed (not perfect yet). 
 */
+
+//Filter the terminal output to only print errors:
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
+// Only show warnings and errors from HttpClient
+builder.Logging.AddFilter("System.Net.Http.HttpClient", LogLevel.Warning);
+
 
 //Variables:
     //bool debug = false;
