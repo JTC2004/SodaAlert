@@ -16,7 +16,7 @@ var builder = WebApplication.CreateBuilder(args);
     via URL + query combinations from JSON files,
     automatically queries again every 3 seconds,
     lets the user know whether the data has changed or not,
-    and prints what changed (not perfect yet). 
+    and prints what changed (working, but needs testing). 
 */
 
 //Filter the terminal output to only print errors:

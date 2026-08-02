@@ -7,7 +7,7 @@ using SodaAlertService.Models;
 public class QueryMonitorService : BackgroundService
 {
     private readonly SodaClient _sodaClient;
-    private Dictionary<string, string> previousJSON = new();    //This is a dictionary that tracks the previous json calls.
+    private Dictionary<string, List<BuildingPermit>> previousMonitorsPermits = new();    //This is a dictionary that tracks the previous json calls.
 
     public QueryMonitorService(SodaClient sodaClient)
     {
@@ -39,50 +39,61 @@ public class QueryMonitorService : BackgroundService
             //   Execute SoQL query?    yes
             //   Detect changes?        yes
             //   Print messages?        yes
-            //   Send notifications?    not yet
+            //   Send notifications?    WIP. Not perfect yet.
             int i = 0;
             foreach (Monitor monitor in monitors)
             {
                 string URL = monitor.BaseUrl + monitor.Query;           //The full URL plus the query.
 
-                var rawJSON = await _sodaClient.GetRawJsonAsync(monitor.BaseUrl, monitor.Query);
+                var currentPermits = await _sodaClient.GetLatestPermitsAsync(monitor.BaseUrl, monitor.Query);
 
-                //If this monitor's raw JSON isn't already in the dictionary, add it, with the URL as the key.
-                if (!previousJSON.ContainsKey(URL))
+                //Account for null:
+                if (currentPermits == null)
                 {
-                    previousJSON[URL] = rawJSON;
+                    Console.WriteLine($"Monitor {i} returned no data.");
+                    i++;
+                    continue;
+                }
+
+                //If this monitor's parsed JSON isn't already in the dictionary, add it, with the URL as the key.
+                if (!previousMonitorsPermits.ContainsKey(URL))
+                {
+                    previousMonitorsPermits[URL] = currentPermits;
                     Console.WriteLine($"Now observing with monitor {i}.");
+                    i++;
+                    continue;
                 }
                 //If this URL's raw JSON is different from what is recorded in the dictionary, notify the user and update the dictionary.
-                else if (previousJSON[URL] != rawJSON)
+                else if (previousMonitorsPermits[URL] != currentPermits)
                 {
-                    Console.WriteLine($"MONITOR {i} CHANGED!!");
-
-                    //var parsedJSON = await _sodaClient.GetLatestPermitsAsync(monitor.BaseUrl, monitor.Query);
-                    //Console.WriteLine($"Monitor '{monitor.Query}' returned {parsedJSON?.Count ?? 0} records.");
 
                     //Compare the two and report what changed:
-                    List<BuildingPermit>? current = JsonSerializer.Deserialize<List<BuildingPermit>>(rawJSON);
-                    List<BuildingPermit>? previous = JsonSerializer.Deserialize<List<BuildingPermit>>(previousJSON[URL]);
+                    var previousPermits = previousMonitorsPermits[URL];
+
+                    bool changed = false;
+                    List<string> updates = [];
 
                     //Since every permit has a unique permit number, build dictionaries:
                     //Note: ! is a null-forgiving operator here. It means: "I know this value won't be null here."
+                    var currentDict = currentPermits.Where(p => p.PermitNumber != null).ToDictionary(p => p.PermitNumber!);     
+                    var previousDict = previousPermits.Where(p => p.PermitNumber != null).ToDictionary(p => p.PermitNumber!);      //Filter out if null.
 
-                    var currentDict = current.Where(p => p.PermitNumber != null).ToDictionary(p => p.PermitNumber!);     
-                    var previousDict = previous.Where(p => p.PermitNumber != null).ToDictionary(p => p.PermitNumber!);      //Filter out if null.
-                    
                     //Search the permits in the monitor, check each property, and see what changed:
-                    foreach (var permit in current)
+                    foreach (var permit in currentPermits)
                     {
                         if (permit.PermitNumber == null)
+                        {
                             continue;
-
+                        }
+                        //Add a message if a permit was added:
                         if (!previousDict.TryGetValue(permit.PermitNumber, out var oldPermit))
                         {
-                            Console.WriteLine($"New permit: {permit.PermitNumber}");
+                            updates.Add($"\tNew permit added: {permit.PermitNumber}");
+                            changed = true;
                             continue;
                         }
 
+                        //Add a message if a permit property was changed:
                         foreach (var property in typeof(BuildingPermit).GetProperties())
                         {
                             object? oldValue = property.GetValue(oldPermit);
@@ -90,13 +101,39 @@ public class QueryMonitorService : BackgroundService
 
                             if (!Equals(oldValue, newValue))
                             {
-                                Console.WriteLine(
-                                    $"\tPermit # {permit.PermitNumber}: {property.Name} changed from '{oldValue}' to '{newValue}'");
+                                updates.Add($"\tPermit # {permit.PermitNumber}: {property.Name} changed from '{oldValue}' to '{newValue}'");
+                                changed = true;
                             }
                         }
                     }
+                    //Add a message if a permit was removed:
+                    foreach (var permitNumber in previousDict.Keys)
+                    {
+                        if (!currentDict.ContainsKey(permitNumber))
+                        {
+                            updates.Add($"Removed permit: {permitNumber}");
+                            changed = true;
+                        }
+                    }
 
-                    previousJSON[URL] = rawJSON;
+                    //Print the update messages if there was a difference detected:
+                    if (changed)
+                    {
+                        Console.WriteLine($"MONITOR {i} CHANGED!!");
+                        foreach (var update in updates)
+                        {
+                            Console.WriteLine(update);
+                        }
+
+                        Console.WriteLine($"\tNumber of permits returned: {currentDict.Count}");
+                    }
+                    //Else, print there was nothing to report.
+                    else
+                    {
+                        Console.WriteLine($"Nothing to report with Monitor {i}.");
+                    }
+                    
+                    previousMonitorsPermits[URL] = currentPermits;
                 }
                 //Else, nothing changed.
                 else
