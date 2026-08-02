@@ -44,9 +44,11 @@ public class QueryMonitorService : BackgroundService
             int pollingSeconds = 0;
             foreach (Monitor monitor in monitors)
             {
-                string URL = monitor.BaseUrl + monitor.Query;           //The full URL plus the query.
-                pollingSeconds = monitor.PollingIntervalMinutes * 60;   //How long to wait before polling again.
-
+                string URL = monitor.BaseUrl + monitor.Query;                   //The full URL plus the query.
+                if(pollingSeconds == 0)
+                {
+                    pollingSeconds = monitor.PollingIntervalSeconds;    //How long to wait before polling again.
+                }
                 var currentPermits = await _sodaClient.GetLatestPermitsAsync(monitor.BaseUrl, monitor.Query);
 
                 //Account for null:
@@ -72,7 +74,7 @@ public class QueryMonitorService : BackgroundService
                     //Compare the two and report what changed:
                     var previousPermits = previousMonitorsPermits[URL];
 
-                    bool changed = false;
+                    int numChanges = 0;
                     List<string> updates = [];
 
                     //Since every permit has a unique permit number, build dictionaries:
@@ -90,8 +92,8 @@ public class QueryMonitorService : BackgroundService
                         //Add a message if a permit was added:
                         if (!previousDict.TryGetValue(permit.PermitNumber, out var oldPermit))
                         {
-                            updates.Add($"\tNew permit added: {permit.PermitNumber}");
-                            changed = true;
+                            updates.Add($"New permit added: {permit.PermitNumber}");
+                            numChanges++;
                             continue;
                         }
 
@@ -103,8 +105,8 @@ public class QueryMonitorService : BackgroundService
 
                             if (!Equals(oldValue, newValue))
                             {
-                                updates.Add($"\tPermit # {permit.PermitNumber}: {property.Name} changed from '{oldValue}' to '{newValue}'");
-                                changed = true;
+                                updates.Add($"Permit # {permit.PermitNumber}: {property.Name} changed from '{oldValue}' to '{newValue}'");
+                                numChanges++;
                             }
                         }
                     }
@@ -113,23 +115,40 @@ public class QueryMonitorService : BackgroundService
                     {
                         if (!currentDict.ContainsKey(permitNumber))
                         {
-                            updates.Add($"\tRemoved permit: {permitNumber}");
-                            changed = true;
+                            updates.Add($"Removed permit: {permitNumber}");
+                            numChanges++;
                         }
                     }
 
                     //Print the update messages if there was a difference detected:
-                    if (changed)
+                    if (numChanges > 0)
                     {
-                        Console.WriteLine($"MONITOR {i} CHANGED!!");
+                        Console.WriteLine($"Monitor {i} changed!");
+
+                        //SIMULATED EMAIL NOTIFICATION:
+                        Console.WriteLine("\t================ EMAIL =================");
+                        Console.WriteLine($"\tto: {monitor.Email}");
+                        Console.WriteLine($"\tSubject: SodaAlert - Chicago Building Permits Updated");
+                        Console.WriteLine($"\t");
+                        Console.WriteLine($"\t{numChanges} changes detected in monitor \"{monitor.Name}\":");
                         foreach (var update in updates)
                         {
-                            Console.WriteLine(update);
+                            Console.WriteLine("\t\t• " + update);
                         }
-
-                        Console.WriteLine($"\tQuery used: {monitor.Query}");
                         Console.WriteLine($"\tAt endpoint: {monitor.BaseUrl}");
                         Console.WriteLine($"\tNumber of permits returned: {currentDict.Count}");
+                        Console.WriteLine($"\t");
+                        Console.WriteLine($"\tAI Summary (example):");
+                        Console.WriteLine($"\tFive changes were detected in the monitored electrical work permits.");
+                        Console.WriteLine($"\tThree new permits were issued, primarily involving commercial renovations, ");
+                        Console.WriteLine($"\tresidential electrical service upgrades, and life-safety system installations.");
+                        Console.WriteLine($"\tTwo permits that previously matched the monitoring criteria are no longer present in the current query results, indicating they may have ");
+                        Console.WriteLine($"\tbeen completed, updated so they no longer satisfy the query conditions, or are no longer included in the dataset returned by the monitor.");
+                        Console.WriteLine($"\t\n");
+                        Console.WriteLine($"\tSincerely,");
+                        Console.WriteLine($"\tSodaAlert.");
+                        Console.WriteLine($"\t");
+                        Console.WriteLine("\t=========================================");
                     }
                     //Else, print there was nothing to report.
                     else
@@ -146,8 +165,10 @@ public class QueryMonitorService : BackgroundService
                 }
                 i++;
             }
-            
 
+
+            
+            Console.WriteLine($"Polling monitors again in {pollingSeconds} seconds.");
             await Task.Delay(TimeSpan.FromSeconds(pollingSeconds), stoppingToken);
         }
     }
