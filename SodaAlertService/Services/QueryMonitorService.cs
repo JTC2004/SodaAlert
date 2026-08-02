@@ -144,10 +144,10 @@ public class QueryMonitorService : BackgroundService
                         Console.WriteLine($"\tresidential electrical service upgrades, and life-safety system installations.");
                         Console.WriteLine($"\tTwo permits that previously matched the monitoring criteria are no longer present in the current query results, indicating they may have ");
                         Console.WriteLine($"\tbeen completed, updated so they no longer satisfy the query conditions, or are no longer included in the dataset returned by the monitor.");
-                        Console.WriteLine($"\t\n");
+                        Console.WriteLine($"\t");
                         Console.WriteLine($"\tSincerely,");
                         Console.WriteLine($"\tSodaAlert.");
-                        Console.WriteLine($"\t");
+                        Console.WriteLine($"\t\n");
                         Console.WriteLine("\t=========================================");
                     }
                     //Else, print there was nothing to report.

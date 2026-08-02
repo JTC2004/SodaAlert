@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("SodaAlertService")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+5d2216950968eff955ab04a02dcf2331c39c1d64")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+0098556348f00892b3bd2407375ee77155ad8044")]
 [assembly: System.Reflection.AssemblyProductAttribute("SodaAlertService")]
 [assembly: System.Reflection.AssemblyTitleAttribute("SodaAlertService")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
