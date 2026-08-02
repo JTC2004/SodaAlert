@@ -1,0 +1,6 @@
+{
+  "baseUrl": "https://data.cityofchicago.org/resource/ydr8-5enu.json",
+  "query": "$where=upper(work_description) like '%ELECTRICAL%'&$order=issue_date DESC",
+  "pollingIntervalMinutes": 1,
+  "email": "jaredcrow@gmail.com"
+}

@@ -1,0 +1,6 @@
+{
+  "baseUrl": "https://data.cityofchicago.org/resource/ydr8-5enu.json",
+  "query": "$where=issue_date >= '2026-08-02T00:00:00'",
+  "pollingIntervalMinutes": 1,
+  "email": "jaredcrow@gmail.com"
+}

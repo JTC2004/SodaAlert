@@ -41,9 +41,11 @@ public class QueryMonitorService : BackgroundService
             //   Print messages?        yes
             //   Send notifications?    WIP. Not perfect yet.
             int i = 0;
+            int pollingSeconds = 0;
             foreach (Monitor monitor in monitors)
             {
                 string URL = monitor.BaseUrl + monitor.Query;           //The full URL plus the query.
+                pollingSeconds = monitor.PollingIntervalMinutes * 60;   //How long to wait before polling again.
 
                 var currentPermits = await _sodaClient.GetLatestPermitsAsync(monitor.BaseUrl, monitor.Query);
 
@@ -111,7 +113,7 @@ public class QueryMonitorService : BackgroundService
                     {
                         if (!currentDict.ContainsKey(permitNumber))
                         {
-                            updates.Add($"Removed permit: {permitNumber}");
+                            updates.Add($"\tRemoved permit: {permitNumber}");
                             changed = true;
                         }
                     }
@@ -125,6 +127,8 @@ public class QueryMonitorService : BackgroundService
                             Console.WriteLine(update);
                         }
 
+                        Console.WriteLine($"\tQuery used: {monitor.Query}");
+                        Console.WriteLine($"\tAt endpoint: {monitor.BaseUrl}");
                         Console.WriteLine($"\tNumber of permits returned: {currentDict.Count}");
                     }
                     //Else, print there was nothing to report.
@@ -144,7 +148,7 @@ public class QueryMonitorService : BackgroundService
             }
             
 
-            await Task.Delay(TimeSpan.FromSeconds(3), stoppingToken);
+            await Task.Delay(TimeSpan.FromSeconds(pollingSeconds), stoppingToken);
         }
     }
 }
