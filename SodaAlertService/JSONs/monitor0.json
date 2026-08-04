@@ -4,5 +4,5 @@
   "query": "$where=reported_cost > 1000000",
   "pollingIntervalSeconds": 5,
   "pollingIntervalMinutes": 1,
-  "email": "jaredcrow@gmail.com"
+  "email": "john.doe@gmail.com"
 }
