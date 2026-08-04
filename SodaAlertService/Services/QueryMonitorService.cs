@@ -39,7 +39,7 @@ public class QueryMonitorService : BackgroundService
             //   Execute SoQL query?    yes
             //   Detect changes?        yes
             //   Print messages?        yes
-            //   Send notifications?    WIP. Not perfect yet.
+            //   Send notifications?    yes (simulated)
             int i = 0;
             int pollingSeconds = 0;
             foreach (Monitor monitor in monitors)
