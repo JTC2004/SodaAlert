@@ -1,7 +1,7 @@
 # SodaAlert
 This program saves and continuously monitors SoQL queries in the Socrata Open Data API (SODA).
 
-Before you run SodaAlret install these dependencies:
+Before you run SodaAlret, make sure you have .NET installed, and install the following dependencies in the root of the project:
     - dotnet add package Microsoft.EntityFrameworkCore.Sqlite
     - dotnet add package Microsoft.EntityFrameworkCore.Design
     - dotnet add package Microsoft.EntityFrameworkCore.Tools
