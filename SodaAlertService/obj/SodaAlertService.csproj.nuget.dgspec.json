@@ -1,31 +1,25 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\jared\\GitHub\\SodaAlert\\SodaAlertService\\SodaAlertService.csproj": {}
+    "/Users/jaredcrow/GitHub/SodaAlert/SodaAlertService/SodaAlertService.csproj": {}
   },
   "projects": {
-    "C:\\Users\\jared\\GitHub\\SodaAlert\\SodaAlertService\\SodaAlertService.csproj": {
+    "/Users/jaredcrow/GitHub/SodaAlert/SodaAlertService/SodaAlertService.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\jared\\GitHub\\SodaAlert\\SodaAlertService\\SodaAlertService.csproj",
+        "projectUniqueName": "/Users/jaredcrow/GitHub/SodaAlert/SodaAlertService/SodaAlertService.csproj",
         "projectName": "SodaAlertService",
-        "projectPath": "C:\\Users\\jared\\GitHub\\SodaAlert\\SodaAlertService\\SodaAlertService.csproj",
-        "packagesPath": "C:\\Users\\jared\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\jared\\GitHub\\SodaAlert\\SodaAlertService\\obj\\",
+        "projectPath": "/Users/jaredcrow/GitHub/SodaAlert/SodaAlertService/SodaAlertService.csproj",
+        "packagesPath": "/Users/jaredcrow/.nuget/packages/",
+        "outputPath": "/Users/jaredcrow/GitHub/SodaAlert/SodaAlertService/obj/",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-        ],
         "configFilePaths": [
-          "C:\\Users\\jared\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+          "/Users/jaredcrow/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net10.0"
         ],
         "sources": {
-          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -92,7 +86,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.302/PortableRuntimeIdentifierGraph.json",
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/10.0.302/PortableRuntimeIdentifierGraph.json",
           "packagesToPrune": {
             "Microsoft.AspNetCore": "(,10.0.32767]",
             "Microsoft.AspNetCore.Antiforgery": "(,10.0.32767]",
