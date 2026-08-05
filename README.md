@@ -11,7 +11,7 @@ How to use:
 
     - To start SodaAlert, run the command "dotnet run" in the directory SodaAlertService.
 
-FYI: SodaAlert currently doesn't monitor each endpoint on separate time intervals. It isntead uses the amount of seconds from the first file read for all JSONS.
+FYI: SodaAlert currently doesn't monitor each endpoint on separate time intervals. It instead uses the amount of seconds from the first file read for all JSONS.
 
 Some example queries for your JSON files:
     - $limit=5
