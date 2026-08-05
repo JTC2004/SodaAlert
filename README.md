@@ -1,5 +1,5 @@
 # SodaAlert
-This continuously monitors Socrata Open Data API (SODA) endpoints by reading SoQL queries and endpoint URLs from JSON files in the JSONs directory.
+This .NET project continuously monitors Socrata Open Data API (SODA) endpoints by reading SoQL queries and endpoint URLs from JSON files in the JSONs directory.
 
 Before you run SodaAlert, make sure you have .NET installed, and install the following dependencies in the root of the project:
     - dotnet add package Microsoft.EntityFrameworkCore.Sqlite
